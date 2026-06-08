@@ -1,0 +1,31 @@
+// prisma/schema.prisma
+// Defines the database tables for the face detection app.
+// Run `npm run db:push` to create these tables in PostgreSQL.
+
+generator client {
+  provider = "prisma-client-js"
+  // Outputs inside face_detection/node_modules/@prisma/client (isolated from parent)
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User — admin accounts that can log in
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String // bcrypt hashed
+}
+
+// FaceRecord — stores each detected face entry
+model FaceRecord {
+  id          Int      @id @default(autoincrement())
+  personName  String                        // name label for this face
+  imageUrl    String                        // URL/path of the uploaded image
+  confidence  Float    @default(0)          // detection confidence score 0-100
+  detectedAt  DateTime @default(now())      // when the detection was run
+  status      String   @default("pending")  // pending | detected | failed
+}
